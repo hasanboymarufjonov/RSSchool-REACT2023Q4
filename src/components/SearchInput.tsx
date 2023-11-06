@@ -1,56 +1,43 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/SearchInput.css';
-
-interface SearchInputState {
-  searchTerm: string;
-}
 
 interface SearchInputProps {
   onSearch: (searchTerm: string) => void;
 }
 
-class SearchInput extends Component<SearchInputProps, SearchInputState> {
-  constructor(props: SearchInputProps) {
-    super(props);
-    this.state = {
-      searchTerm: '',
-    };
-  }
+const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  componentDidMount() {
+  useEffect(() => {
     const savedSearchTerm = localStorage.getItem('searchTerm');
     if (savedSearchTerm) {
-      this.setState({ searchTerm: savedSearchTerm });
+      setSearchTerm(savedSearchTerm);
     }
-  }
+  }, []);
 
-  handleSearch = () => {
-    const { searchTerm } = this.state;
+  const handleSearch = () => {
     localStorage.setItem('searchTerm', searchTerm.trim());
-    this.props.onSearch(searchTerm.trim());
+    onSearch(searchTerm.trim());
   };
 
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
-  render() {
-    const { searchTerm } = this.state;
-    return (
-      <div className="search-input">
-        <input
-          className="search-input__input"
-          type="text"
-          placeholder="Search for Vader ..."
-          value={searchTerm}
-          onChange={this.handleChange}
-        />
-        <button className="search-input__button" onClick={this.handleSearch}>
-          Search
-        </button>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="search-input">
+      <input
+        className="search-input__input"
+        type="text"
+        placeholder="Search for Vader ..."
+        value={searchTerm}
+        onChange={handleChange}
+      />
+      <button className="search-input__button" onClick={handleSearch}>
+        Search
+      </button>
+    </div>
+  );
+};
 
 export default SearchInput;
